@@ -1,0 +1,11 @@
+# Godot 4+ specific
+.godot/
+/android/
+/build/
+/export/
+
+# Экспортированные сборки
+*.exe
+*.pck
+*.zip
+export_presets.cfg
