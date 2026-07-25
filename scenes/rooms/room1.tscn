@@ -34,7 +34,7 @@ position = Vector2(1600, 1376)
 position = Vector2(3700, 1376)
 
 [node name="CheckStart" parent="." unique_id=1711878748 instance=ExtResource("6_cp")]
-position = Vector2(200, 1356)
+position = Vector2(130, 1356)
 
 [node name="CheckShaft" parent="." unique_id=438847398 instance=ExtResource("6_cp")]
 position = Vector2(2816, 812)

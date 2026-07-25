@@ -27,7 +27,7 @@ position = Vector2(430, 992)
 position = Vector2(2560, 992)
 
 [node name="CheckStart" parent="." instance=ExtResource("6_cp")]
-position = Vector2(200, 972)
+position = Vector2(130, 972)
 
 [node name="CheckMid" parent="." instance=ExtResource("6_cp")]
 position = Vector2(1136, 652)
