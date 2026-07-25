@@ -24,6 +24,7 @@ extends CharacterBody2D
 @export var wall_jump_push := 340.0
 @export var wall_jump_velocity := -500.0
 @export var wall_jump_lock := 0.12          ## Короткая блокировка управления после отскока
+@export var climb_speed := 160.0            ## Скорость лазанья по лиане
 
 @export_group("Рывок (dash)")
 @export var dash_speed := 640.0
@@ -58,6 +59,9 @@ var _dead := false                          ## На время смерти-ст
 var _was_on_floor := false                  ## Для детекта момента приземления
 var _has_double_jump := false               ## Способность-гейт: разблокируется пикапом
 var _air_jumps := 0                          ## Осталось прыжков в воздухе
+var _on_vine := false                        ## Пересекаемся с лианой
+var _vine_x := 0.0                            ## X лианы (притягиваемся к ней)
+var _climbing := false                       ## Активно карабкаемся
 
 var _squash := Vector2.ONE                   ## Текущий сквош-стретч визуала
 
@@ -68,6 +72,15 @@ func _ready() -> void:
 	_start_pos = global_position
 	_checkpoint = global_position
 	add_to_group("player")                  ## чтобы шипы/чекпоинты находили нас
+	$VineSensor.area_entered.connect(func(a: Area2D) -> void:
+		if a.is_in_group("vine"):
+			_on_vine = true
+			_vine_x = a.global_position.x
+	)
+	$VineSensor.area_exited.connect(func(a: Area2D) -> void:
+		if a.is_in_group("vine"):
+			_on_vine = false
+	)
 
 func _physics_process(delta: float) -> void:
 	if _dead:
@@ -108,6 +121,26 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		_was_on_floor = is_on_floor()
 		return
+
+	# --- Лиана: карабканье перехватывает обычное движение, пока висим ---
+	if not _on_vine:
+		_climbing = false
+	elif Input.is_action_pressed("move_up") or Input.is_action_pressed("move_down"):
+		_climbing = true
+	if _climbing:
+		if Input.is_action_just_pressed("jump"):
+			_climbing = false
+			velocity.y = jump_velocity
+			Sfx.play("jump")
+			_squash = Vector2(0.72, 1.32)
+		else:
+			velocity = Vector2(0.0, Input.get_axis("move_up", "move_down") * climb_speed)
+			global_position.x = move_toward(global_position.x, _vine_x, 220.0 * delta)
+			_can_dash = true
+			_air_jumps = max_air_jumps
+			move_and_slide()
+			_was_on_floor = is_on_floor()
+			return
 
 	if is_on_floor():
 		_coyote = coyote_time

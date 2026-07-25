@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/CrumblePlatform.tscn" id="11_crumble"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Spring.tscn" id="12_spring"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Crawler.tscn" id="13_crawler"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/Vine.tscn" id="14_vine"]
 
 [node name="room1" type="Node2D" unique_id=63455047]
 script = ExtResource("2_room")
@@ -83,3 +84,6 @@ position = Vector2(2200, 1366)
 [node name="Crawler1" parent="." instance=ExtResource("13_crawler")]
 position = Vector2(2700, 1240)
 range = 220.0
+
+[node name="Vine1" parent="." instance=ExtResource("14_vine")]
+position = Vector2(5500, 1000)
