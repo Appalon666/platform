@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Spring.tscn" id="12_spring"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Crawler.tscn" id="13_crawler"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Vine.tscn" id="14_vine"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/Wind.tscn" id="15_wind"]
 
 [node name="room1" type="Node2D" unique_id=63455047]
 script = ExtResource("2_room")
@@ -87,3 +88,10 @@ range = 220.0
 
 [node name="Vine1" parent="." instance=ExtResource("14_vine")]
 position = Vector2(5500, 1000)
+
+[node name="Wind1" parent="." instance=ExtResource("15_wind")]
+position = Vector2(5920, 980)
+
+[node name="WindMote" parent="." unique_id=771205511 instance=ExtResource("9_mote")]
+position = Vector2(5920, 900)
+id = "r1_wind"

@@ -62,6 +62,7 @@ var _air_jumps := 0                          ## Осталось прыжков 
 var _on_vine := false                        ## Пересекаемся с лианой
 var _vine_x := 0.0                            ## X лианы (притягиваемся к ней)
 var _climbing := false                       ## Активно карабкаемся
+var _wind: Node = null                        ## Текущий восходящий поток (Area2D) или null
 
 var _squash := Vector2.ONE                   ## Текущий сквош-стретч визуала
 
@@ -165,6 +166,11 @@ func _physics_process(delta: float) -> void:
 	if is_on_wall_only():
 		_can_dash = true
 
+	# --- Восходящий поток: плавно тянет вверх, перебивая гравитацию, пока внутри ---
+	if _wind != null:
+		velocity.y = move_toward(velocity.y, -_wind.max_up, _wind.force * delta)
+		_can_dash = true
+
 	# --- Прыжок / прыжок от стены (учитывает coyote и buffer) ---
 	if _buffer > 0.0:
 		if _coyote > 0.0:
@@ -261,6 +267,13 @@ func bounce() -> void:
 func unlock_double_jump() -> void:
 	_has_double_jump = true
 	_air_jumps = max_air_jumps
+
+## Вход/выход из восходящего потока (Wind). Зовёт зона ветра.
+func enter_wind(w: Node) -> void:
+	_wind = w
+func exit_wind(w: Node) -> void:
+	if _wind == w:
+		_wind = null
 
 ## Мощный запуск вверх (пружина-батут). Зовёт Spring.
 func launch(force: float) -> void:
