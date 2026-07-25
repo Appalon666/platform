@@ -12,14 +12,8 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/MovingPlatform.tscn" id="10_movplat"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/CrumblePlatform.tscn" id="11_crumble"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Spring.tscn" id="12_spring"]
-[ext_resource type="PackedScene" path="res://scenes/prefabs/Crawler.tscn" id="13_crawler"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Vine.tscn" id="14_vine"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Wind.tscn" id="15_wind"]
-[ext_resource type="PackedScene" path="res://scenes/prefabs/Wisp.tscn" id="16_wisp"]
-[ext_resource type="PackedScene" path="res://scenes/prefabs/PushBlock.tscn" id="17_block"]
-[ext_resource type="PackedScene" path="res://scenes/prefabs/Pendulum.tscn" id="18_pendulum"]
-[ext_resource type="PackedScene" path="res://scenes/prefabs/SawRail.tscn" id="19_saw"]
-[ext_resource type="PackedScene" path="res://scenes/prefabs/Laser.tscn" id="20_laser"]
 
 [node name="room1" type="Node2D" unique_id=63455047]
 script = ExtResource("2_room")
@@ -87,10 +81,6 @@ position = Vector2(4300, 1320)
 [node name="Spring1" parent="." instance=ExtResource("12_spring")]
 position = Vector2(2200, 1366)
 
-[node name="Crawler1" parent="." instance=ExtResource("13_crawler")]
-position = Vector2(2700, 1240)
-range = 220.0
-
 [node name="Vine1" parent="." instance=ExtResource("14_vine")]
 position = Vector2(5500, 1000)
 
@@ -109,21 +99,3 @@ id = "from_secret"
 position = Vector2(5920, 965)
 target = "room7"
 entry = "from_top"
-
-[node name="Wisp1" parent="." instance=ExtResource("16_wisp")]
-position = Vector2(1600, 1050)
-
-[node name="PushBlock1" parent="." instance=ExtResource("17_block")]
-position = Vector2(900, 1330)
-
-[node name="Pendulum1" parent="." instance=ExtResource("18_pendulum")]
-position = Vector2(2400, 1150)
-
-[node name="SawRail1" parent="." instance=ExtResource("19_saw")]
-position = Vector2(4000, 1345)
-travel = 180.0
-
-[node name="Laser1" parent="." instance=ExtResource("20_laser")]
-position = Vector2(5150, 1060)
-rotation = 1.5708
-length = 300.0
