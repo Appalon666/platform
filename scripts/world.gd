@@ -1,34 +1,31 @@
 extends Node2D
-## Мир: держит игрока и текущую комнату, свапает комнаты при выходе через дверь.
-## Каждая комната задаёт свой `size` (границы камеры) и `entries` (точки спавна).
+## Мир: держит игрока и текущую комнату (.tscn), свапает комнаты по вызову двери.
+## Двери находят World по группе "world" и зовут go_to(target, entry).
 
 const ROOMS := {
-	"room1": "res://scripts/room1.gd",
-	"room2": "res://scripts/room2.gd",
+	"room1": "res://scenes/rooms/room1.tscn",
+	"room2": "res://scenes/rooms/room2.tscn",
 }
 
 @onready var _player: CharacterBody2D = $Player
-var _room: Room
+var _room: Node
 
 func _ready() -> void:
+	add_to_group("world")
 	go_to("room1", "start")
 
-## Сменить комнату: убрать старую, собрать новую, поставить игрока у нужной двери.
+## Сменить комнату: убрать старую, инстансить новую, поставить игрока у нужной двери.
 func go_to(name: String, entry: String) -> void:
 	if not ROOMS.has(name):
 		push_error("World: нет комнаты «%s»" % name)
 		return
 	if _room:
 		_room.queue_free()
-	_room = load(ROOMS[name]).new()
+	_room = load(ROOMS[name]).instantiate()
 	add_child(_room)
-	_room.exit_taken.connect(_on_exit)
 	var pos: Vector2 = _room.entries.get(entry, Vector2(100, 620))
 	_player.arrive(pos)
 	_set_camera_limits(_room.size)
-
-func _on_exit(target: String, entry: String) -> void:
-	call_deferred("go_to", target, entry)   # свап после текущего кадра физики
 
 ## Камера живёт на игроке; лимиты — по размеру текущей комнаты (в тайлах × 32).
 func _set_camera_limits(sz: Vector2i) -> void:
