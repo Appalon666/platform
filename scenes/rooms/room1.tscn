@@ -98,8 +98,17 @@ position = Vector2(5500, 1000)
 position = Vector2(5920, 980)
 
 [node name="WindMote" parent="." unique_id=771205511 instance=ExtResource("9_mote")]
-position = Vector2(5920, 900)
+position = Vector2(5920, 1150)
 id = "r1_wind"
+
+[node name="FromSecret" parent="." instance=ExtResource("3_entry")]
+position = Vector2(5600, 1340)
+id = "from_secret"
+
+[node name="SecretDoor" parent="." instance=ExtResource("4_door")]
+position = Vector2(5920, 965)
+target = "room7"
+entry = "from_top"
 
 [node name="Wisp1" parent="." instance=ExtResource("16_wisp")]
 position = Vector2(1600, 1050)

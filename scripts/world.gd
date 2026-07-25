@@ -9,6 +9,7 @@ const ROOMS := {
 	"room4": "res://scenes/rooms/room4.tscn",
 	"room5": "res://scenes/rooms/room5.tscn",
 	"room6": "res://scenes/rooms/room6.tscn",
+	"room7": "res://scenes/rooms/room7.tscn",
 }
 
 @onready var _player: CharacterBody2D = $Player
@@ -29,6 +30,7 @@ func go_to(name: String, entry: String) -> void:
 	add_child(_room)
 	var pos: Vector2 = _room.entries.get(entry, Vector2(100, 620))
 	_player.arrive(pos)
+	_player.set_kill_y(_room.size.y * 32 + 240)   # бездна ниже пола комнаты
 	_set_camera_limits(_room.size)
 
 ## Камера живёт на игроке; лимиты — по размеру текущей комнаты (в тайлах × 32).

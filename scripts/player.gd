@@ -63,6 +63,7 @@ var _on_vine := false                        ## Пересекаемся с ли
 var _vine_x := 0.0                            ## X лианы (притягиваемся к ней)
 var _climbing := false                       ## Активно карабкаемся
 var _wind: Node = null                        ## Текущий восходящий поток (Area2D) или null
+var _kill_y := 2000.0                         ## Ниже этого Y — «упал в бездну» (World задаёт по высоте комнаты)
 
 var _squash := Vector2.ONE                   ## Текущий сквош-стретч визуала
 
@@ -86,7 +87,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if _dead:
 		return
-	if Input.is_action_just_pressed("restart") or global_position.y > _start_pos.y + 1500.0:
+	if Input.is_action_just_pressed("restart") or global_position.y > _kill_y:
 		die()
 		return
 
@@ -262,6 +263,10 @@ func bounce() -> void:
 	_can_dash = true
 	_add_shake(jump_shake)
 	Sfx.play("jump", 1.15)
+
+## Порог «падения в бездну» — World задаёт по высоте текущей комнаты. Зовёт World.go_to.
+func set_kill_y(y: float) -> void:
+	_kill_y = y
 
 ## Разблокировать двойной прыжок (способность-гейт). Зовёт пикап Ability.
 func unlock_double_jump() -> void:
