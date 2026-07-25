@@ -9,3 +9,6 @@
 *.pck
 *.zip
 export_presets.cfg
+
+# MCP — машинно-зависимый абсолютный путь к серверу
+.mcp.json

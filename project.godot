@@ -1,5 +1,10 @@
-; Godot project — Precision MV (codename)
-; HollowKnight-style world + SuperMeatBoy-style precision movement.
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
 
@@ -11,7 +16,15 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 
 [autoload]
 
+Palette="*res://scripts/palette.gd"
+Sfx="*res://scripts/sfx.gd"
+Fx="*res://scripts/fx.gd"
+Music="*res://scripts/music.gd"
+Ambience="*res://scripts/ambience.gd"
 InputSetup="*res://scripts/input_setup.gd"
+MCPRuntimeBridge="*res://addons/godot_mcp/services/mcp_runtime_bridge.gd"
+MCPInputBridge="*res://addons/godot_mcp/services/mcp_input_bridge.gd"
+MCPScreenshotBridge="*res://addons/godot_mcp/services/mcp_screenshot_bridge.gd"
 
 [display]
 
@@ -19,6 +32,10 @@ window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
 
 [rendering]
 

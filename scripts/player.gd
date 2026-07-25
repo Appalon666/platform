@@ -29,6 +29,16 @@ extends CharacterBody2D
 @export var dash_time := 0.14
 @export var dash_cooldown := 0.30
 
+@export_group("Juice (game feel)")
+@export var jump_shake := 2.0
+@export var walljump_shake := 2.5
+@export var land_shake := 3.0
+@export var dash_shake := 4.0
+@export var death_shake := 9.0
+@export var shake_decay := 30.0             ## Как быстро гаснет тряска
+@export var land_threshold := 320.0         ## Мин. скорость падения для «удара» о землю
+@export var death_hitstop := 0.07           ## Стоп-кадр в момент смерти (сек, реального времени)
+
 var _coyote := 0.0
 var _buffer := 0.0
 var _jump_held := false
@@ -40,14 +50,26 @@ var _dash_cd := 0.0
 var _dash_dir := Vector2.ZERO
 var _can_dash := true
 var _start_pos := Vector2.ZERO
+var _checkpoint := Vector2.ZERO             ## Куда возрождаемся (последний зажжённый уголёк)
+var _shake := 0.0                           ## Текущая амплитуда тряски камеры
+var _dead := false                          ## На время смерти-стоп-кадра глушим управление
+var _was_on_floor := false                  ## Для детекта момента приземления
+
+@onready var _cam: Camera2D = $Camera2D
 
 func _ready() -> void:
 	_start_pos = global_position
+	_checkpoint = global_position
+	add_to_group("player")                  ## чтобы шипы/чекпоинты находили нас
 
 func _physics_process(delta: float) -> void:
-	if Input.is_action_just_pressed("restart") or global_position.y > _start_pos.y + 1500.0:
-		_respawn()
+	if _dead:
 		return
+	if Input.is_action_just_pressed("restart") or global_position.y > _start_pos.y + 1500.0:
+		die()
+		return
+
+	_update_shake(delta)
 
 	var input_x := Input.get_axis("move_left", "move_right")
 	if input_x != 0.0:
@@ -76,6 +98,7 @@ func _physics_process(delta: float) -> void:
 			_dashing = false
 			velocity *= 0.4
 		move_and_slide()
+		_was_on_floor = is_on_floor()
 		return
 
 	if is_on_floor():
@@ -106,6 +129,9 @@ func _physics_process(delta: float) -> void:
 			velocity.y = jump_velocity
 			_buffer = 0.0
 			_coyote = 0.0
+			Sfx.play("jump")
+			_add_shake(jump_shake)
+			Fx.dust(global_position + Vector2(0, 20), Palette.CH1_FOG, 6)
 		elif is_on_wall_only():
 			var n := get_wall_normal()
 			velocity.x = n.x * wall_jump_push
@@ -113,8 +139,18 @@ func _physics_process(delta: float) -> void:
 			_wall_lock = wall_jump_lock
 			_buffer = 0.0
 			_can_dash = true
+			Sfx.play("walljump")
+			_add_shake(walljump_shake)
+			Fx.dust(global_position + Vector2(-n.x * 12, 0), Palette.CH1_FOG, 6)
 
+	# --- Приземление: удар о землю после заметного падения = звук, пыль, тряска ---
+	var fall_speed := velocity.y
 	move_and_slide()
+	if is_on_floor() and not _was_on_floor and fall_speed > land_threshold:
+		Sfx.play("land", 0.9 + fall_speed / 4000.0)          # чем сильнее удар — тем ниже тон
+		_add_shake(land_shake * clampf(fall_speed / max_fall, 0.4, 1.0))
+		Fx.dust(global_position + Vector2(0, 20), Palette.CH1_FOG)
+	_was_on_floor = is_on_floor()
 
 func _start_dash() -> void:
 	# 8-направленный рывок по текущему вводу; если ввода нет — рывок «вперёд».
@@ -129,9 +165,51 @@ func _start_dash() -> void:
 	_dash_t = dash_time
 	_dash_cd = dash_cooldown
 	_can_dash = false
+	Sfx.play("dash")
+	_add_shake(dash_shake)
+	Fx.burst(global_position, Palette.AMBER_CORE, 12, 150.0, 0.4)   # янтарный шлейф
 
-func _respawn() -> void:
+## Смерть = juice + мгновенный возврат на последний чекпоинт. Зовут шипы/падение/R.
+## Порядок: звук + вспышка искр + тряска → стоп-кадр → перенос на чекпоинт.
+func die() -> void:
+	if _dead:
+		return
+	_dead = true
 	velocity = Vector2.ZERO
-	global_position = _start_pos
+	Sfx.play("death")
+	_add_shake(death_shake)
+	Fx.burst(global_position, Palette.AMBER_LIGHT, 22, 260.0, 0.6)   # жизнь-уголёк разлетается
+
+	await _hitstop(death_hitstop)
+
+	global_position = _checkpoint
 	_dashing = false
+	_dash_cd = 0.0
 	_can_dash = true
+	_coyote = 0.0
+	_buffer = 0.0
+	_wall_lock = 0.0
+	_was_on_floor = false
+	_dead = false
+
+## Зажечь новый уголёк: сюда будем возрождаться. Зовёт чекпоинт при касании.
+func set_checkpoint(pos: Vector2) -> void:
+	_checkpoint = pos
+
+## Короткий стоп-кадр (freeze frame) — «удар» момента смерти. Идёт в реальном времени.
+func _hitstop(duration: float) -> void:
+	Engine.time_scale = 0.0
+	await get_tree().create_timer(duration, true, false, true).timeout
+	Engine.time_scale = 1.0
+
+## Добавить тряску (берём максимум — сильный удар не гасится слабым).
+func _add_shake(amount: float) -> void:
+	_shake = maxf(_shake, amount)
+
+## Затухающая тряска: дрожь смещения камеры, плавно к нулю.
+func _update_shake(delta: float) -> void:
+	if _shake > 0.0:
+		_shake = maxf(_shake - shake_decay * delta, 0.0)
+		_cam.offset = Vector2(randf_range(-_shake, _shake), randf_range(-_shake, _shake))
+	elif _cam.offset != Vector2.ZERO:
+		_cam.offset = Vector2.ZERO
