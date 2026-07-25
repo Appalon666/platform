@@ -6,6 +6,7 @@ const ROOMS := {
 	"room1": "res://scenes/rooms/room1.tscn",
 	"room2": "res://scenes/rooms/room2.tscn",
 	"room3": "res://scenes/rooms/room3.tscn",
+	"room4": "res://scenes/rooms/room4.tscn",
 }
 
 @onready var _player: CharacterBody2D = $Player
