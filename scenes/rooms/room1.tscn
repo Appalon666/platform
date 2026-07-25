@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Vine.tscn" id="14_vine"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Wind.tscn" id="15_wind"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Wisp.tscn" id="16_wisp"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/PushBlock.tscn" id="17_block"]
 
 [node name="room1" type="Node2D" unique_id=63455047]
 script = ExtResource("2_room")
@@ -99,3 +100,6 @@ id = "r1_wind"
 
 [node name="Wisp1" parent="." instance=ExtResource("16_wisp")]
 position = Vector2(1600, 1050)
+
+[node name="PushBlock1" parent="." instance=ExtResource("17_block")]
+position = Vector2(900, 1330)
