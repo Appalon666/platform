@@ -39,6 +39,7 @@ extends CharacterBody2D
 @export var shake_decay := 30.0             ## Как быстро гаснет тряска
 @export var land_threshold := 320.0         ## Мин. скорость падения для «удара» о землю
 @export var death_hitstop := 0.07           ## Стоп-кадр в момент смерти (сек, реального времени)
+@export var squash_recover := 16.0          ## Скорость возврата сквош-стретча к норме
 
 var _coyote := 0.0
 var _buffer := 0.0
@@ -58,7 +59,10 @@ var _was_on_floor := false                  ## Для детекта момен�
 var _has_double_jump := false               ## Способность-гейт: разблокируется пикапом
 var _air_jumps := 0                          ## Осталось прыжков в воздухе
 
+var _squash := Vector2.ONE                   ## Текущий сквош-стретч визуала
+
 @onready var _cam: Camera2D = $Camera2D
+@onready var _vis: Node2D = $Vis
 
 func _ready() -> void:
 	_start_pos = global_position
@@ -73,6 +77,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_update_shake(delta)
+	_update_squash(delta)
 
 	var input_x := Input.get_axis("move_left", "move_right")
 	if input_x != 0.0:
@@ -136,6 +141,7 @@ func _physics_process(delta: float) -> void:
 			Sfx.play("jump")
 			_add_shake(jump_shake)
 			Fx.dust(global_position + Vector2(0, 20), Palette.CH1_FOG, 6)
+			_squash = Vector2(0.72, 1.32)        # стретч вверх на прыжке
 		elif is_on_wall_only():
 			var n := get_wall_normal()
 			velocity.x = n.x * wall_jump_push
@@ -163,6 +169,7 @@ func _physics_process(delta: float) -> void:
 		Sfx.play("land", 0.9 + fall_speed / 4000.0)          # чем сильнее удар — тем ниже тон
 		_add_shake(land_shake * clampf(fall_speed / max_fall, 0.4, 1.0))
 		Fx.dust(global_position + Vector2(0, 20), Palette.CH1_FOG)
+		_squash = Vector2(1.38, 0.66)            # сплющивание при ударе о землю
 	_was_on_floor = is_on_floor()
 
 func _start_dash() -> void:
@@ -181,6 +188,7 @@ func _start_dash() -> void:
 	Sfx.play("dash")
 	_add_shake(dash_shake)
 	Fx.burst(global_position, Palette.AMBER_CORE, 12, 150.0, 0.4)   # янтарный шлейф
+	_squash = Vector2(1.3, 0.75)                # растяжка-поп на старте рывка
 
 ## Смерть = juice + мгновенный возврат на последний чекпоинт. Зовут шипы/падение/R.
 ## Порядок: звук + вспышка искр + тряска → стоп-кадр → перенос на чекпоинт.
@@ -254,3 +262,15 @@ func _update_shake(delta: float) -> void:
 		_cam.offset = Vector2(randf_range(-_shake, _shake), randf_range(-_shake, _shake))
 	elif _cam.offset != Vector2.ZERO:
 		_cam.offset = Vector2.ZERO
+
+## Сквош-стретч визуала: в воздухе тянемся по вертикали скорости, на дэше — по горизонтали;
+## пружиним к цели. Импульсы (прыжок/приземление/дэш) выставляют _squash напрямую — «поп».
+func _update_squash(delta: float) -> void:
+	var target := Vector2.ONE
+	if _dashing:
+		target = Vector2(1.28, 0.8)
+	elif not is_on_floor():
+		var s := clampf(absf(velocity.y) / 900.0, 0.0, 1.0) * 0.22
+		target = Vector2(1.0 - s, 1.0 + s)
+	_squash = _squash.lerp(target, squash_recover * delta)
+	_vis.scale = _squash
