@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Enemy.tscn" id="7_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Ability.tscn" id="8_ability"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Mote.tscn" id="9_mote"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/MovingPlatform.tscn" id="10_movplat"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/CrumblePlatform.tscn" id="11_crumble"]
 
 [node name="room1" type="Node2D" unique_id=63455047]
 script = ExtResource("2_room")
@@ -65,3 +67,10 @@ id = "r1_m2"
 [node name="Mote3" parent="." unique_id=597819764 instance=ExtResource("9_mote")]
 position = Vector2(5000, 1250)
 id = "r1_m3"
+
+[node name="MovingPlatform1" parent="." instance=ExtResource("10_movplat")]
+position = Vector2(3400, 1330)
+offset = Vector2(0, -260)
+
+[node name="CrumblePlatform1" parent="." instance=ExtResource("11_crumble")]
+position = Vector2(4300, 1320)
