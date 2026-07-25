@@ -4,7 +4,7 @@ class_name SawRail
 ## скоростью, разворачиваясь на краях. Касание = смерть. vertical=true — рельс вертикальный.
 
 @export var travel := 220.0     ## половина длины рельса — ход в каждую сторону (px)
-@export var speed := 170.0      ## скорость движения по рельсу
+@export var speed := 150.0      ## скорость движения по рельсу
 @export var vertical := false   ## true — ездит вверх-вниз
 @export var spin := 12.0        ## скорость вращения лезвия (рад/с)
 

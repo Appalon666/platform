@@ -6,9 +6,9 @@ class_name Laser
 
 @export var length := 260.0
 @export var thickness := 12.0
-@export var off_time := 1.4
-@export var warn_time := 0.45
-@export var on_time := 1.0
+@export var off_time := 1.5
+@export var warn_time := 0.55
+@export var on_time := 0.9
 @export var start_delay := 0.0
 
 var _t := 0.0

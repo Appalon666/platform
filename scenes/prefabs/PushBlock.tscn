@@ -6,13 +6,13 @@
 size = Vector2(46, 46)
 
 [sub_resource type="PhysicsMaterial" id="mat"]
-friction = 0.9
+friction = 0.7
 
 [node name="PushBlock" type="RigidBody2D"]
-mass = 1.5
+mass = 1.0
 physics_material_override = SubResource("mat")
 lock_rotation = true
-linear_damp = 3.0
+linear_damp = 1.5
 collision_layer = 1
 collision_mask = 1
 script = ExtResource("1")
