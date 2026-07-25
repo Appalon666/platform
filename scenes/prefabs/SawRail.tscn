@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/prefabs/saw_rail.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="shape_hit"]
+radius = 24.0
+
+[node name="SawRail" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Rail" type="Line2D" parent="."]
+points = PackedVector2Array(-220, 0, 220, 0)
+width = 3.0
+default_color = Color(0.219608, 0.223529, 0.266667, 1)
+
+[node name="Blade" type="Node2D" parent="."]
+
+[node name="Disc" type="Node2D" parent="Blade"]
+
+[node name="Saw" type="Polygon2D" parent="Blade/Disc"]
+color = Color(0.435294, 0.454902, 0.505882, 1)
+polygon = PackedVector2Array(0, -28, 5, -19, 14, -24, 14, -14, 24, -14, 19, -5, 28, 0, 19, 5, 24, 14, 14, 14, 14, 24, 5, 19, 0, 28, -5, 19, -14, 24, -14, 14, -24, 14, -19, 5, -28, 0, -19, -5, -24, -14, -14, -14, -14, -24, -5, -19)
+
+[node name="Hub" type="Polygon2D" parent="Blade/Disc"]
+color = Color(0.156863, 0.160784, 0.196078, 1)
+polygon = PackedVector2Array(-9, -9, 9, -9, 9, 9, -9, 9)
+
+[node name="Spokes" type="Line2D" parent="Blade/Disc"]
+points = PackedVector2Array(0, -16, 0, 16, 0, 0, -16, 0, 16, 0)
+width = 2.0
+default_color = Color(0.278431, 0.290196, 0.337255, 1)
+
+[node name="Hitbox" type="Area2D" parent="Blade"]
+collision_layer = 2
+collision_mask = 1
+
+[node name="HitShape" type="CollisionShape2D" parent="Blade/Hitbox"]
+shape = SubResource("shape_hit")

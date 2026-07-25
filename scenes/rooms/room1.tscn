@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Wisp.tscn" id="16_wisp"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/PushBlock.tscn" id="17_block"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Pendulum.tscn" id="18_pendulum"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/SawRail.tscn" id="19_saw"]
 
 [node name="room1" type="Node2D" unique_id=63455047]
 script = ExtResource("2_room")
@@ -107,3 +108,7 @@ position = Vector2(900, 1330)
 
 [node name="Pendulum1" parent="." instance=ExtResource("18_pendulum")]
 position = Vector2(2400, 1150)
+
+[node name="SawRail1" parent="." instance=ExtResource("19_saw")]
+position = Vector2(4000, 1345)
+travel = 180.0
