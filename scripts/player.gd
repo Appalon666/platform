@@ -196,6 +196,13 @@ func die() -> void:
 func set_checkpoint(pos: Vector2) -> void:
 	_checkpoint = pos
 
+## Отскок после стомпа врага (прыжок сверху). Зовёт Enemy.
+func bounce() -> void:
+	velocity.y = jump_velocity * 0.85
+	_can_dash = true
+	_add_shake(jump_shake)
+	Sfx.play("jump", 1.15)
+
 ## Прибытие в комнату (World при переходе): встать сюда, обнулить инерцию и сделать
 ## это точкой возрождения, пока не тронут чекпоинт внутри новой комнаты.
 func arrive(pos: Vector2) -> void:
