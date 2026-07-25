@@ -17,7 +17,7 @@ id = "from_west"
 
 [node name="DoorWest" parent="." instance=ExtResource("4_door")]
 position = Vector2(32, 960)
-target = "room1"
+target = "room2"
 entry = "from_east"
 
 [node name="Spike1" parent="." instance=ExtResource("5_spike")]
