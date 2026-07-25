@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/prefabs/spike.gd" id="1"]
 
 [sub_resource type="RectangleShape2D" id="1"]
-size = Vector2(182, 16)
+size = Vector2(90, 16)
 
 [node name="Spike" type="Area2D"]
 script = ExtResource("1")
@@ -14,4 +14,4 @@ shape = SubResource("1")
 
 [node name="Poly" type="Polygon2D" parent="."]
 color = Color(0.72549, 0.443137, 0.231373, 1)
-polygon = PackedVector2Array(-96, 0, -80, -26, -64, 0, -48, -26, -32, 0, -16, -26, 0, 0, 16, -26, 32, 0, 48, -26, 64, 0, 80, -26, 96, 0)
+polygon = PackedVector2Array(-48, 0, -32, -26, -16, 0, 0, -26, 16, 0, 32, -26, 48, 0)
