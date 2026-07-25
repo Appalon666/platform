@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Mote.tscn" id="9_mote"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/MovingPlatform.tscn" id="10_movplat"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/CrumblePlatform.tscn" id="11_crumble"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/Spring.tscn" id="12_spring"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/Crawler.tscn" id="13_crawler"]
 
 [node name="room1" type="Node2D" unique_id=63455047]
 script = ExtResource("2_room")
@@ -74,3 +76,10 @@ offset = Vector2(0, -260)
 
 [node name="CrumblePlatform1" parent="." instance=ExtResource("11_crumble")]
 position = Vector2(4300, 1320)
+
+[node name="Spring1" parent="." instance=ExtResource("12_spring")]
+position = Vector2(2200, 1366)
+
+[node name="Crawler1" parent="." instance=ExtResource("13_crawler")]
+position = Vector2(2700, 1240)
+range = 220.0

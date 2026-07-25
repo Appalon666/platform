@@ -229,6 +229,15 @@ func unlock_double_jump() -> void:
 	_has_double_jump = true
 	_air_jumps = max_air_jumps
 
+## Мощный запуск вверх (пружина-батут). Зовёт Spring.
+func launch(force: float) -> void:
+	velocity.y = -force
+	_can_dash = true
+	_air_jumps = max_air_jumps
+	_squash = Vector2(0.68, 1.4)
+	_add_shake(land_shake)
+	Sfx.play("jump", 0.75)
+
 
 ## Прибытие в комнату (World при переходе): встать сюда, обнулить инерцию и сделать
 ## это точкой возрождения, пока не тронут чекпоинт внутри новой комнаты.
