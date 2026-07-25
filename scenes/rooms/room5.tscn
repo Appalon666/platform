@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Door.tscn" id="4_door"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Checkpoint.tscn" id="6_cp"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Enemy.tscn" id="7_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/Mote.tscn" id="8_mote"]
 
 [node name="room5" type="Node2D" unique_id=90561198]
 script = ExtResource("2_room")
@@ -28,6 +29,14 @@ position = Vector2(700, 620)
 
 [node name="Enemy2" parent="." instance=ExtResource("7_enemy")]
 position = Vector2(1100, 620)
+
+[node name="Mote1" parent="." instance=ExtResource("8_mote")]
+position = Vector2(700, 600)
+id = "r5_m1"
+
+[node name="Mote2" parent="." instance=ExtResource("8_mote")]
+position = Vector2(1380, 400)
+id = "r5_m2"
 
 [node name="Tiles" type="TileMapLayer" parent="." unique_id=1037494615]
 tile_set = ExtResource("1_tileset")

@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Checkpoint.tscn" id="6_cp"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Enemy.tscn" id="7_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Ability.tscn" id="8_ability"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/Mote.tscn" id="9_mote"]
 
 [node name="room1" type="Node2D" unique_id=63455047]
 script = ExtResource("2_room")
@@ -52,3 +53,15 @@ position = Vector2(5000, 1340)
 
 [node name="DoubleJump" parent="." instance=ExtResource("8_ability")]
 position = Vector2(450, 1300)
+
+[node name="Mote1" parent="." instance=ExtResource("9_mote")]
+position = Vector2(960, 1300)
+id = "r1_m1"
+
+[node name="Mote2" parent="." instance=ExtResource("9_mote")]
+position = Vector2(2816, 780)
+id = "r1_m2"
+
+[node name="Mote3" parent="." instance=ExtResource("9_mote")]
+position = Vector2(5000, 1250)
+id = "r1_m3"
