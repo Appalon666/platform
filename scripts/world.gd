@@ -17,7 +17,9 @@ var _room: Node
 
 func _ready() -> void:
 	add_to_group("world")
-	go_to("room1", "start")
+	go_to(Progress.last_room, Progress.last_entry)      # старт с сейва (или room1/start для новой игры)
+	if Progress.has_ability("double_jump"):             # вернуть открытые способности
+		_player.unlock_double_jump()
 
 ## Сменить комнату: убрать старую, инстансить новую, поставить игрока у нужной двери.
 func go_to(name: String, entry: String) -> void:
@@ -32,6 +34,7 @@ func go_to(name: String, entry: String) -> void:
 	_player.arrive(pos)
 	_player.set_kill_y(_room.size.y * 32 + 240)   # бездна ниже пола комнаты
 	_set_camera_limits(_room.size)
+	Progress.mark_room(name, entry)               # автосейв точки «Продолжить»
 
 ## Камера живёт на игроке; лимиты — по размеру текущей комнаты (в тайлах × 32).
 func _set_camera_limits(sz: Vector2i) -> void:

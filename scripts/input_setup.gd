@@ -10,6 +10,7 @@ func _enter_tree() -> void:
 	_bind("jump",       [KEY_SPACE, KEY_C])
 	_bind("dash",       [KEY_SHIFT, KEY_K, KEY_X])
 	_bind("restart",    [KEY_R])
+	_bind("pause",      [KEY_ESCAPE, KEY_P])
 
 func _bind(action: String, keys: Array) -> void:
 	if not InputMap.has_action(action):

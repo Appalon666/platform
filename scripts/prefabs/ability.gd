@@ -10,6 +10,7 @@ func _on_body(b: Node) -> void:
 	if not b.is_in_group("player") or not b.has_method("unlock_double_jump"):
 		return
 	b.unlock_double_jump()
+	Progress.unlock("double_jump")          # сохранить способность в сейв
 	Sfx.play("checkpoint", 1.4)
 	Fx.burst(global_position, Palette.AMBER_LIGHT, 28, 240.0, 0.9, "glow")
 	queue_free()
