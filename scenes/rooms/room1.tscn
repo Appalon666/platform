@@ -20,7 +20,6 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Pendulum.tscn" id="18_pendulum"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/SawRail.tscn" id="19_saw"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Laser.tscn" id="20_laser"]
-[ext_resource type="PackedScene" path="res://scenes/prefabs/Conveyor.tscn" id="21_conveyor"]
 
 [node name="room1" type="Node2D" unique_id=63455047]
 script = ExtResource("2_room")
@@ -119,7 +118,3 @@ travel = 180.0
 position = Vector2(5150, 1060)
 rotation = 1.5708
 length = 300.0
-
-[node name="Conveyor1" parent="." instance=ExtResource("21_conveyor")]
-position = Vector2(3000, 1364)
-belt_speed = -140.0
