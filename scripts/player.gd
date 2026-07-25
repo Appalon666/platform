@@ -17,6 +17,7 @@ extends CharacterBody2D
 @export var coyote_time := 0.10             ## Можно прыгнуть чуть-чуть после схода с края
 @export var jump_buffer := 0.10             ## Прыжок засчитается, если нажал за миг до земли
 @export var jump_cut := 0.45                ## Отпустил рано — прыжок короче (variable jump)
+@export var max_air_jumps := 1              ## Сколько прыжков в воздухе даёт двойной прыжок
 
 @export_group("Стены")
 @export var wall_slide_speed := 130.0
@@ -54,6 +55,8 @@ var _checkpoint := Vector2.ZERO             ## Куда возрождаемся
 var _shake := 0.0                           ## Текущая амплитуда тряски камеры
 var _dead := false                          ## На время смерти-стоп-кадра глушим управление
 var _was_on_floor := false                  ## Для детекта момента приземления
+var _has_double_jump := false               ## Способность-гейт: разблокируется пикапом
+var _air_jumps := 0                          ## Осталось прыжков в воздухе
 
 @onready var _cam: Camera2D = $Camera2D
 
@@ -104,6 +107,7 @@ func _physics_process(delta: float) -> void:
 	if is_on_floor():
 		_coyote = coyote_time
 		_can_dash = true
+		_air_jumps = max_air_jumps           # перезарядка воздушных прыжков на земле
 
 	# --- Горизонталь (с блокировкой после отскока от стены) ---
 	if _wall_lock <= 0.0:
@@ -139,9 +143,18 @@ func _physics_process(delta: float) -> void:
 			_wall_lock = wall_jump_lock
 			_buffer = 0.0
 			_can_dash = true
+			_air_jumps = max_air_jumps        # отскок от стены тоже перезаряжает
 			Sfx.play("walljump")
 			_add_shake(walljump_shake)
 			Fx.dust(global_position + Vector2(-n.x * 12, 0), Palette.CH1_FOG, 6)
+		elif _has_double_jump and _air_jumps > 0:
+			# --- Двойной прыжок (способность-гейт) ---
+			velocity.y = jump_velocity * 0.9
+			_air_jumps -= 1
+			_buffer = 0.0
+			Sfx.play("jump", 1.1)
+			_add_shake(jump_shake)
+			Fx.burst(global_position, Palette.AMBER_CORE, 10, 120.0, 0.4, "glow")
 
 	# --- Приземление: удар о землю после заметного падения = звук, пыль, тряска ---
 	var fall_speed := velocity.y
@@ -202,6 +215,12 @@ func bounce() -> void:
 	_can_dash = true
 	_add_shake(jump_shake)
 	Sfx.play("jump", 1.15)
+
+## Разблокировать двойной прыжок (способность-гейт). Зовёт пикап Ability.
+func unlock_double_jump() -> void:
+	_has_double_jump = true
+	_air_jumps = max_air_jumps
+
 
 ## Прибытие в комнату (World при переходе): встать сюда, обнулить инерцию и сделать
 ## это точкой возрождения, пока не тронут чекпоинт внутри новой комнаты.
