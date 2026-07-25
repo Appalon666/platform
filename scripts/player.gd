@@ -196,6 +196,21 @@ func die() -> void:
 func set_checkpoint(pos: Vector2) -> void:
 	_checkpoint = pos
 
+## Прибытие в комнату (World при переходе): встать сюда, обнулить инерцию и сделать
+## это точкой возрождения, пока не тронут чекпоинт внутри новой комнаты.
+func arrive(pos: Vector2) -> void:
+	global_position = pos
+	_checkpoint = pos
+	velocity = Vector2.ZERO
+	_dashing = false
+	_dash_cd = 0.0
+	_can_dash = true
+	_coyote = 0.0
+	_buffer = 0.0
+	_wall_lock = 0.0
+	_was_on_floor = false
+	_dead = false
+
 ## Короткий стоп-кадр (freeze frame) — «удар» момента смерти. Идёт в реальном времени.
 func _hitstop(duration: float) -> void:
 	Engine.time_scale = 0.0
