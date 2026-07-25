@@ -25,6 +25,14 @@
 - **Файлы:** генерируются в коде — `scripts/sfx.gd` (jump / walljump / dash / land / death / checkpoint).
 - **Лицензия:** наши, без ограничений.
 
+## Графика / VFX
+
+### Kenney — Particle Pack (1.1)
+- **Файлы:** `assets/vfx/kenney_particles/` (80 PNG: circle/light/flare, spark, smoke, dirt, star, trace, twirl, flame, magic и др.)
+- **Автор:** Kenney — https://kenney.nl · также на OpenGameArt: https://opengameart.org/content/particle-pack-80-sprites
+- **Лицензия:** **CC0 1.0** (Public Domain) — атрибуция не обязательна. См. `LICENSE.txt` в папке.
+- **Использование:** партиклы juice (`scripts/fx.gd`): smoke = пыль, spark = искры рывка, circle = угольки на смерти. Тонируются в янтарь через `modulate`.
+
 ## Музыка
 
 ### Hollow Melodies Lite (Tom Feldmann)

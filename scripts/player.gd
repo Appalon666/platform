@@ -178,7 +178,7 @@ func die() -> void:
 	velocity = Vector2.ZERO
 	Sfx.play("death")
 	_add_shake(death_shake)
-	Fx.burst(global_position, Palette.AMBER_LIGHT, 22, 260.0, 0.6)   # жизнь-уголёк разлетается
+	Fx.burst(global_position, Palette.AMBER_LIGHT, 22, 260.0, 0.6, "glow")   # жизнь-уголёк разлетается
 
 	await _hitstop(death_hitstop)
 

@@ -1,65 +1,166 @@
 extends Node2D
-## Тест-полигон из статичных блоков (плейсхолдеры), чтобы щупать движение.
-## Плюс — проверка палитры вживую (ARTBIBLE §2): выцветший мир + янтарь = жизнь.
-## Позже заменим на TileMap-уровни.
+## Комната Главы 1 «Окраина» на TileMap (плейсхолдер-тайлсет из палитры, ARTBIBLE §2/§3):
+## выцветший силуэт CH1_MID + тонкий rim-light сверху. Шипы, чекпоинты, маяк — поверх.
+## Пайплайн арта: цветные блоки → ЭТОТ тайл-силуэт → свой арт в Krita (позже).
+
+const TILE := 32                                    # размер тайла, px
+const ROOM_W := 40                                  # ширина комнаты в тайлах
+const ROOM_H := 23                                  # высота комнаты в тайлах
+var _tiles: TileMapLayer
 
 func _ready() -> void:
-	_background()
-	_beacon(Vector2(1080, 240))                     # «маяк» вдали — тянет вглубь
+	_parallax()
+	_build_room()
+	_camera_limits()
 
-	_block(Vector2(640, 700), Vector2(1400, 40))    # пол
-	_block(Vector2(-40, 300), Vector2(40, 900))     # левая граница
-	_block(Vector2(1320, 300), Vector2(40, 900))    # правая граница
-	_block(Vector2(500, 560), Vector2(200, 24))     # платформа
-	_block(Vector2(820, 440), Vector2(200, 24))     # платформа выше
-	_block(Vector2(320, 400), Vector2(40, 300))     # столб для wall-jump
-	_block(Vector2(1040, 520), Vector2(40, 340))    # столб для wall-jump
+	_spikes(Vector2(560, 640), 160, 6)              # шипы на полу — перепрыгнуть
 
-	_spikes(Vector2(760, 680), 260, 9)              # шипы на полу — dash/прыжок над ними
-	_spikes(Vector2(500, 548), 120, 4)              # шипы на нижней платформе
+	_checkpoint(Vector2(100, 620))                  # старт
+	_checkpoint(Vector2(608, 428))                  # середина (на платформе P3)
+	_checkpoint(Vector2(1168, 108))                 # цель — верх wall-jump-шахты
 
-	_checkpoint(Vector2(200, 660))                  # старт (у левого края)
-	_checkpoint(Vector2(900, 408))                  # награда за верхнюю платформу
+## Раскладка комнаты (40×23 тайла = 1280×736): пол/стены/потолок + лесенка платформ.
+func _build_room() -> void:
+	_tiles = TileMapLayer.new()
+	_tiles.tile_set = _build_tileset()
+	_tiles.z_index = -10                            # уровень за игроком
+	add_child(_tiles)
 
-func _block(center: Vector2, size: Vector2) -> void:
-	var body := StaticBody2D.new()
-	body.position = center
-	var col := CollisionShape2D.new()
-	var shape := RectangleShape2D.new()
-	shape.size = size
-	col.shape = shape
-	body.add_child(col)
-	var poly := Polygon2D.new()
-	var h := size * 0.5
-	poly.polygon = PackedVector2Array([
-		Vector2(-h.x, -h.y), Vector2(h.x, -h.y),
-		Vector2(h.x, h.y), Vector2(-h.x, h.y),
-	])
-	poly.color = Palette.CH1_MID                     # игровой силуэт Гл.1
-	body.add_child(poly)
-	add_child(body)
+	_fill(0, 0, 40, 1)                              # потолок
+	_fill(0, 20, 40, 3)                             # пол
+	_fill(0, 0, 2, 23)                              # левая стена
+	_fill(38, 0, 2, 23)                             # правая стена
 
-## Выцветший задник (тёмная десатурированная база), чтобы янтарь читался.
-func _background() -> void:
-	var bg := ColorRect.new()
-	bg.color = Palette.CH1_FG.lerp(Palette.CH1_MID, 0.35)
-	bg.size = Vector2(4000, 2400)
-	bg.position = Vector2(-1400, -900)
-	bg.z_index = -100
-	add_child(bg)
+	_fill(5, 18, 4, 1)                              # P1
+	_fill(11, 16, 4, 1)                             # P2
+	_fill(17, 14, 4, 1)                             # P3
+	_fill(23, 12, 4, 1)                             # P4
+	_fill(29, 11, 3, 1)                             # ступень к шахте
 
-## Аддитивное янтарное свечение (маяк / уголёк) — web-безопасно, без Glow (ARTBIBLE §7).
-func _beacon(pos: Vector2) -> void:
-	var s := Sprite2D.new()
-	s.texture = _radial_tex()
-	s.position = pos
-	s.scale = Vector2(3.5, 3.5)
-	s.modulate = Palette.AMBER_LIGHT
-	s.z_index = -50
+	_fill(34, 5, 1, 15)                             # столб wall-jump-шахты
+	_fill(35, 4, 3, 1)                              # цель-карниз над шахтой
+
+## Заливка прямоугольника тайлами: верхний ряд — с rim-light, ниже — сплошной.
+func _fill(x: int, y: int, w: int, h: int) -> void:
+	for i in range(x, x + w):
+		for j in range(y, y + h):
+			var t := 0 if j == y else 1             # 0 = кромка (rim), 1 = сплошной
+			_tiles.set_cell(Vector2i(i, j), 0, Vector2i(t, 0), 0)
+
+## Тайлсет из палитры: 2 тайла (кромка / сплошной), у каждого квадратная коллизия.
+func _build_tileset() -> TileSet:
+	var ts := TileSet.new()
+	ts.tile_size = Vector2i(TILE, TILE)
+	ts.add_physics_layer()
+	ts.set_physics_layer_collision_layer(0, 1)      # тайлы на слое 1 — игрок его сканирует
+	ts.set_physics_layer_collision_mask(0, 1)
+	var src := TileSetAtlasSource.new()
+	src.texture = _tile_atlas()
+	src.texture_region_size = Vector2i(TILE, TILE)
+	for ax in 2:
+		src.create_tile(Vector2i(ax, 0))
+	ts.add_source(src, 0)                           # прикрепить ДО правки коллизии,
+	                                                # иначе physics-слой тайлам не виден
+	var hs := TILE * 0.5
+	var sq := PackedVector2Array([
+		Vector2(-hs, -hs), Vector2(hs, -hs), Vector2(hs, hs), Vector2(-hs, hs)])
+	for ax in 2:
+		var td := src.get_tile_data(Vector2i(ax, 0), 0)
+		td.add_collision_polygon(0)
+		td.set_collision_polygon_points(0, 0, sq)
+	return ts
+
+## Атлас 2×1: тайл 0 — силуэт с rim-light сверху; тайл 1 — сплошной чуть темнее (глубина).
+func _tile_atlas() -> ImageTexture:
+	var img := Image.create(TILE * 2, TILE, false, Image.FORMAT_RGBA8)
+	var mid := Palette.CH1_MID
+	var rim := mid.lerp(Palette.CH1_FOG, 0.6)
+	var deep := mid.lerp(Palette.CH1_FG, 0.18)
+	for x in TILE:
+		for y in TILE:
+			var c := mid
+			if y == 0: c = rim
+			elif y == 1: c = mid.lerp(rim, 0.5)
+			img.set_pixel(x, y, c)                  # тайл 0 (кромка)
+			img.set_pixel(TILE + x, y, deep)        # тайл 1 (сплошной)
+	return ImageTexture.create_from_image(img)
+
+## Ограничить камеру границами комнаты — не показываем пустоту за стенами.
+## Камера живёт на игроке (player.tscn); лимиты ставит комната → каждая задаёт свои.
+func _camera_limits() -> void:
+	var cam := get_node_or_null("Player/Camera2D") as Camera2D
+	if cam == null:
+		return
+	cam.limit_left = 0
+	cam.limit_top = 0
+	cam.limit_right = ROOM_W * TILE
+	cam.limit_bottom = ROOM_H * TILE
+
+## Параллакс-задник (ARTBIBLE §6): три плана глубины. Слой -1 = позади геймплея.
+func _parallax() -> void:
+	var pb := ParallaxBackground.new()
+	pb.layer = -1
+	add_child(pb)
+
+	# Дальний слой (едва движется — «далеко, но тянет»): база + туман + маяк.
+	var far := ParallaxLayer.new()
+	far.motion_scale = Vector2(0.15, 0.15)
+	pb.add_child(far)
+
+	var base := ColorRect.new()
+	base.color = Palette.CH1_FG.lerp(Palette.CH1_MID, 0.3)   # выцветшая база
+	base.size = Vector2(5000, 3000)
+	base.position = Vector2(-1800, -1100)
+	far.add_child(base)
+
+	var fog := Sprite2D.new()                        # мягкий туман/небо сверху
+	fog.texture = _fog_tex()
+	fog.centered = false
+	fog.position = Vector2(-600, -300)
+	fog.scale = Vector2(40, 8)
+	far.add_child(fog)
+
+	var b := Sprite2D.new()                          # маяк — тёплое сердце в глубине
+	b.texture = _radial_tex()
+	b.position = Vector2(1120, 240)
+	b.scale = Vector2(3.5, 3.5)
+	b.modulate = Palette.AMBER_LIGHT
 	var m := CanvasItemMaterial.new()
 	m.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	s.material = m
-	add_child(s)
+	b.material = m
+	far.add_child(b)
+
+	# Средний слой: дальние тёмные силуэты-гряды для глубины.
+	var mid := ParallaxLayer.new()
+	mid.motion_scale = Vector2(0.5, 0.5)
+	pb.add_child(mid)
+	_silhouette(mid, Vector2(260, 720), Vector2(620, 460))
+	_silhouette(mid, Vector2(1000, 760), Vector2(760, 520))
+
+## Тёмный силуэт дальнего плана (почти чёрная форма — глубина без деталей).
+func _silhouette(layer: ParallaxLayer, center: Vector2, size: Vector2) -> void:
+	var h := size * 0.5
+	var poly := Polygon2D.new()
+	poly.position = center
+	poly.polygon = PackedVector2Array([
+		Vector2(-h.x, -h.y), Vector2(h.x * 0.6, -h.y * 0.7),
+		Vector2(h.x, h.y), Vector2(-h.x, h.y)])       # скошенный силуэт-гряда
+	poly.color = Palette.CH1_FG.lerp(Palette.CH1_MID, 0.12)
+	layer.add_child(poly)
+
+## Вертикальный градиент тумана (CH1_FOG сверху → прозрачность вниз).
+func _fog_tex() -> Texture2D:
+	var g := Gradient.new()
+	g.offsets = PackedFloat32Array([0.0, 1.0])
+	g.colors = PackedColorArray([Color(Palette.CH1_FOG, 0.35), Color(Palette.CH1_FOG, 0.0)])
+	var t := GradientTexture2D.new()
+	t.gradient = g
+	t.width = 32
+	t.height = 128
+	t.fill = GradientTexture2D.FILL_LINEAR
+	t.fill_from = Vector2(0.0, 0.0)
+	t.fill_to = Vector2(0.0, 1.0)
+	return t
 
 ## Шипы — мгновенная смерть. Area2D в группе "hazard", сам зовёт die() у игрока.
 ## Тёплый цвет (AMBER_DEEP): по оси палитры активное/горячее = угроза.
