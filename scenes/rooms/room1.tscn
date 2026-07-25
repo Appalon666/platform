@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Crawler.tscn" id="13_crawler"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Vine.tscn" id="14_vine"]
 [ext_resource type="PackedScene" path="res://scenes/prefabs/Wind.tscn" id="15_wind"]
+[ext_resource type="PackedScene" path="res://scenes/prefabs/Wisp.tscn" id="16_wisp"]
 
 [node name="room1" type="Node2D" unique_id=63455047]
 script = ExtResource("2_room")
@@ -95,3 +96,6 @@ position = Vector2(5920, 980)
 [node name="WindMote" parent="." unique_id=771205511 instance=ExtResource("9_mote")]
 position = Vector2(5920, 900)
 id = "r1_wind"
+
+[node name="Wisp1" parent="." instance=ExtResource("16_wisp")]
+position = Vector2(1600, 1050)
