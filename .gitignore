@@ -16,3 +16,5 @@ export_presets.cfg
 # Временные MCP-скриншоты
 _shot.png
 _shot.png.import
+_*.png
+_*.png.import
