@@ -12,3 +12,7 @@ export_presets.cfg
 
 # MCP — машинно-зависимый абсолютный путь к серверу
 .mcp.json
+
+# Временные MCP-скриншоты
+_shot.png
+_shot.png.import
